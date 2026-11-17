@@ -18,6 +18,9 @@ def main() -> None:
     print(result)
 
 
-
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Ctrl C detected, end of program")
+        sys.exit(1)

@@ -3,6 +3,7 @@ import json
 import math
 import csv
 import sys
+import matplotlib.pyplot as plt
 
 
 class LinearRegression:
@@ -75,7 +76,7 @@ class LinearRegression:
             print(f"Error: {e}")
             sys.exit(1)
 
-    def train(self, learning_rate: float = 0.1, iteration: int = 1000) -> None:
+    def train(self, learning_rate: float = 0.1, iteration: int = 3000) -> None:
         if not self.kilometers:
             sys.exit(1)
         (norm_km, self.kilometer_mini,
@@ -121,3 +122,34 @@ class LinearRegression:
         except (OSError, ValueError, TypeError) as e:
             print(f"Error: {e}")
             sys.exit(1)
+
+    def plot(self) -> None:
+        if not self.kilometers:
+            sys.exit(1)
+        plt.scatter(self.kilometers, self.prices, label="Real Data")
+        x_line = [self.kilometer_mini, self.kilometer_max]
+        y_line = [
+            self.hypothese(self.kilometer_mini),
+            self.hypothese(self.kilometer_max),
+        ]
+        plt.plot(x_line, y_line, color="red", label="Linear Regression")
+        plt.xlabel("Kilometer (km)")
+        plt.ylabel("Price (€)")
+        plt.title("Car Price about their Kilometers")
+        plt.legend()
+        plt.show()
+
+    def precision(self) -> float:
+        if not self.kilometers:
+            sys.exit(1)
+        moy_price: float = sum(self.prices) / len(self.prices)
+        sum_error: float = 0.0
+        sum_tot: float = 0.0
+        for i in range(len(self.prices)):
+            sum_error += (
+                (self.prices[i] - self.hypothese(self.kilometers[i])) ** 2
+            )
+            sum_tot += (self.prices[i] - moy_price) ** 2
+        if sum_tot == 0:
+            return 0.0
+        return 1 - (sum_error / sum_tot)
